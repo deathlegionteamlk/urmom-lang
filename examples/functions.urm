@@ -1,0 +1,93 @@
+// Functions in Urmom Lang
+// Function declarations, lambdas, closures, recursion
+
+fn main() {
+    // Basic function
+    println("=== Basic Functions ===")
+    let result = add(10, 20)
+    println("add(10, 20) = " + to_string(result))
+
+    // Function with return type (annotated)
+    let greeting = greet("Developer")
+    println(greeting)
+
+    // Default parameters
+    println("\n=== Default Parameters ===")
+    println(power(2))       // 2^2 = 4
+    println(power(2, 10))   // 2^10 = 1024
+
+    // Variadic functions
+    println("\n=== Variadic Functions ===")
+    let sum_result = sum_all(1, 2, 3, 4, 5)
+    println("Sum of 1-5 = " + to_string(sum_result))
+
+    // Recursive function (Fibonacci)
+    println("\n=== Recursion ===")
+    for i in range(0, 10) {
+        println("  fib(" + to_string(i) + ") = " + to_string(fib(i)))
+    }
+
+    // Lambda / Anonymous functions
+    println("\n=== Lambda Functions ===")
+    let double = fn(x) => x * 2
+    println("double(5) = " + to_string(double(5)))
+
+    let square = fn(x) => x * x
+    println("square(7) = " + to_string(square(7)))
+
+    // Functions as values
+    println("\n=== Higher-Order Functions ===")
+    let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    let doubled = map(double, numbers)
+    println("Doubled: " + join(", ", doubled))
+
+    let evens = filter(fn(x) => x % 2 == 0, numbers)
+    println("Evens: " + join(", ", evens))
+
+    let total = reduce(fn(acc, x) => acc + x, numbers, 0)
+    println("Total: " + to_string(total))
+
+    // Closures
+    println("\n=== Closures ===")
+    let make_counter = fn() {
+        let mut count = 0
+        fn() {
+            count += 1
+            count
+        }
+    }
+    let counter = make_counter()
+    println("Counter: " + to_string(counter()))
+    println("Counter: " + to_string(counter()))
+    println("Counter: " + to_string(counter()))
+}
+
+fn add(a, b) {
+    a + b
+}
+
+fn greet(name) {
+    "Hello, " + name + "! Welcome to Urmom Lang!"
+}
+
+fn power(base, exp = 2) {
+    pow(base, exp)
+}
+
+fn sum_all(...numbers) {
+    let mut total = 0
+    for n in numbers {
+        total += n
+    }
+    total
+}
+
+fn fib(n) {
+    if n <= 1 {
+        return n
+    }
+    fib(n - 1) + fib(n - 2)
+}
+
+main()

@@ -1,0 +1,10 @@
+// Hello World in Urmom Lang
+// The simplest Urmom Lang program
+
+fn main() {
+    println("Hello, World from Urmom Lang!")
+    println("Built by the Death Legion Team")
+    println("The Friendly Gopher says hi! 🐿️")
+}
+
+main()

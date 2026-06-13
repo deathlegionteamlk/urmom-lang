@@ -1,0 +1,57 @@
+// Variables, Types, and Operators in Urmom Lang
+// Demonstrates the core language features
+
+fn main() {
+    // Variable declarations
+    let name = "Urmom Lang"
+    let version = 0.1
+    let year = 2026
+    let is_awesome = true
+
+    println("=== Variables & Types ===")
+    println("Name: " + name)
+    println("Version: " + to_string(version))
+    println("Year: " + to_string(year))
+    println("Is Awesome: " + to_string(is_awesome))
+
+    // Constants
+    const PI = 3.14159265
+    const MAX_CONNECTIONS = 1000
+    println("\nPI = " + to_string(PI))
+    println("Max Connections = " + to_string(MAX_CONNECTIONS))
+
+    // Mutable variables
+    let mut counter = 0
+    counter = counter + 1
+    counter += 5
+    println("\nCounter: " + to_string(counter))
+
+    // Arithmetic operators
+    println("\n=== Arithmetic ===")
+    let a = 10
+    let b = 3
+    println("a + b = " + to_string(a + b))
+    println("a - b = " + to_string(a - b))
+    println("a * b = " + to_string(a * b))
+    println("a / b = " + to_string(a / b))
+    println("a % b = " + to_string(a % b))
+    println("a ** b = " + to_string(a ** b))
+
+    // Comparison operators
+    println("\n=== Comparison ===")
+    println("a == b: " + to_string(a == b))
+    println("a != b: " + to_string(a != b))
+    println("a > b: " + to_string(a > b))
+    println("a < b: " + to_string(a < b))
+
+    // String operations
+    println("\n=== Strings ===")
+    let greeting = "Hello" + " " + "Urmom Lang!"
+    println(greeting)
+    println("Length: " + to_string(len(greeting)))
+    println("Upper: " + upper(greeting))
+    println("Lower: " + lower(greeting))
+    println("Contains 'Lang': " + to_string(contains(greeting, "Lang")))
+}
+
+main()

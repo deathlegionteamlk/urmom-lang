@@ -1,0 +1,77 @@
+// Standard Library Showcase in Urmom Lang
+// Demonstrates the built-in standard library
+
+fn main() {
+    println("=== Urmom Lang Standard Library ===\n")
+
+    // File System operations
+    println("--- std.fs ---")
+    println("Current directory: " + env("PWD"))
+    println("Path join: " + path_join("src", "main.urm"))
+
+    // Math operations
+    println("\n--- std.math ---")
+    println("sqrt(144) = " + to_string(sqrt(144)))
+    println("pow(2, 10) = " + to_string(pow(2, 10)))
+    println("abs(-42) = " + to_string(abs(-42)))
+    println("floor(3.7) = " + to_string(floor(3.7)))
+    println("ceil(3.2) = " + to_string(ceil(3.2)))
+    println("round(3.5) = " + to_string(round(3.5)))
+
+    // String operations
+    println("\n--- String Operations ---")
+    let text = "  Hello, Urmom Lang!  "
+    println("Original: '" + text + "'")
+    println("Trimmed: '" + trim(text) + "'")
+    println("Upper: " + upper(trim(text)))
+    println("Lower: " + lower(trim(text)))
+    println("Contains 'Lang': " + to_string(contains(text, "Lang")))
+    println("Replace: " + replace(text, "Urmom", "Awesome"))
+    println("Split: " + join(" | ", split("a,b,c", ",")))
+
+    // Array operations
+    println("\n--- Array Operations ---")
+    let numbers = [5, 3, 8, 1, 9, 2, 7, 4, 6]
+    println("Original: " + join(", ", numbers))
+    println("Sorted: " + join(", ", sort(numbers)))
+    println("Reversed: " + join(", ", reverse(copy(numbers))))
+
+    let doubled = map(fn(x) => x * 2, numbers)
+    println("Doubled: " + join(", ", doubled))
+
+    let evens = filter(fn(x) => x % 2 == 0, numbers)
+    println("Evens: " + join(", ", evens))
+
+    let sum = reduce(fn(acc, x) => acc + x, numbers, 0)
+    println("Sum: " + to_string(sum))
+
+    // JSON operations
+    println("\n--- JSON Operations ---")
+    let data = {"name": "Urmom Lang", "version": "0.1.0", "features": ["simple", "fast", "concurrent"]}
+    let json_str = to_json(data)
+    println("To JSON: " + json_str)
+
+    let parsed = parse_json(json_str)
+    println("Parsed name: " + to_string(parsed["name"]))
+
+    // Time operations
+    println("\n--- Time Operations ---")
+    let now = time_now()
+    println("Current timestamp: " + to_string(now))
+    println("Formatted: " + time_format("%Y-%m-%d %H:%M:%S"))
+
+    // Random number generation
+    println("\n--- Random ---")
+    println("Random float: " + to_string(rand()))
+    println("Random int (1-100): " + to_string(rand_int(1, 100)))
+
+    // Regex operations (if available)
+    println("\n--- Regex ---")
+    let email = "user@urmom-lang.dev"
+    let is_valid = match("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email)
+    println("Email '" + email + "' is valid: " + to_string(is_valid))
+
+    println("\n✓ Standard Library showcase complete!")
+}
+
+main()

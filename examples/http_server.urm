@@ -1,0 +1,83 @@
+// HTTP Server Example in Urmom Lang
+// Demonstrates building a fast backend server
+
+fn main() {
+    println("=== Urmom Lang HTTP Server ===")
+    println("A simple, fast HTTP server example\n")
+
+    // Define routes
+    let routes = {
+        "/": fn() => "Welcome to Urmom Lang Server!",
+        "/hello": fn() => "Hello from Urmom Lang!",
+        "/api/status": fn() => to_json({
+            "status": "running",
+            "version": "0.1.0",
+            "uptime": time_now(),
+            "concurrent_tasks": 4
+        }),
+        "/api/users": fn() => to_json({
+            "users": [
+                {"id": 1, "name": "Alice", "role": "admin"},
+                {"id": 2, "name": "Bob", "role": "developer"},
+                {"id": 3, "name": "Charlie", "role": "designer"}
+            ]
+        }),
+    }
+
+    // Start server simulation
+    let port = 8080
+    println("Server starting on port " + to_string(port) + "...")
+    println("Routes registered:")
+
+    let route_keys = keys(routes)
+    for route in route_keys {
+        println("  GET " + route)
+    }
+
+    // Simulate handling concurrent requests
+    println("\n--- Handling Concurrent Requests ---")
+
+    let requests = ["/", "/hello", "/api/status", "/api/users"]
+
+    // Process each request (in a real server, these would be spawn'd)
+    for path in requests {
+        let handler = routes[path]
+        if handler != none {
+            let response = handler()
+            println("\nRequest: GET " + path)
+            println("Response: " + to_string(response)[0:80])
+        }
+    }
+
+    // Middleware pattern
+    println("\n\n--- Middleware Pipeline ---")
+    let middleware = [
+        fn(req) {
+            println("  [Logger] " + req["method"] + " " + req["path"])
+            req
+        },
+        fn(req) {
+            println("  [Auth] Checking authentication...")
+            req["authenticated"] = true
+            req
+        },
+        fn(req) {
+            println("  [CORS] Adding CORS headers")
+            req["cors"] = true
+            req
+        },
+    ]
+
+    let request = {"method": "GET", "path": "/api/users"}
+    println("Processing request through middleware:")
+    let mut processed = request
+    for mw in middleware {
+        processed = mw(processed)
+    }
+    println("\nFinal request state: " + to_json(processed))
+
+    println("\n✓ Server example complete!")
+    println("The Friendly Gopher serves requests with speed! 🐿️")
+}
+
+main()

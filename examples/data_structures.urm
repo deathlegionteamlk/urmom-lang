@@ -1,0 +1,95 @@
+// Data Structures in Urmom Lang
+// Arrays, Dicts, Structs, Enums
+
+fn main() {
+    // Arrays
+    println("=== Arrays ===")
+    let fruits = ["apple", "banana", "cherry"]
+    println("Fruits: " + join(", ", fruits))
+    println("First: " + fruits[0])
+    println("Length: " + to_string(len(fruits)))
+
+    append(fruits, "date")
+    println("After append: " + join(", ", fruits))
+
+    let sorted_nums = sort([5, 3, 8, 1, 9, 2, 7])
+    println("Sorted: " + join(", ", sorted_nums))
+
+    // Dictionaries
+    println("\n=== Dictionaries ===")
+    let person = {
+        "name": "Gopher",
+        "age": 5,
+        "role": "Mascot"
+    }
+    println("Name: " + person["name"])
+    println("Age: " + to_string(person["age"]))
+    println("Role: " + person["role"])
+
+    person["language"] = "Urmom Lang"
+    println("Language: " + person["language"])
+    println("Keys: " + join(", ", keys(person)))
+
+    // Structs
+    println("\n=== Structs ===")
+    let point = Point(3, 4)
+    println("Point: (" + to_string(point.x) + ", " + to_string(point.y) + ")")
+    println("Distance from origin: " + to_string(point.distance()))
+
+    let circle = Circle(Point(0, 0), 5.0)
+    println("Circle area: " + to_string(circle.area()))
+
+    // Enum-like patterns
+    println("\n=== Enums ===")
+    let status = Ok("Operation succeeded")
+    println("Status: " + to_string(status))
+
+    let err_status = Error("Something went wrong")
+    println("Error: " + to_string(err_status))
+
+    // Nested data structures
+    println("\n=== Nested Structures ===")
+    let users = [
+        {"name": "Alice", "scores": [95, 87, 92]},
+        {"name": "Bob", "scores": [88, 91, 79]},
+        {"name": "Charlie", "scores": [94, 96, 89]},
+    ]
+
+    for user in users {
+        let name = user["name"]
+        let scores = user["scores"]
+        let avg = reduce(fn(a, b) => a + b, scores, 0) / len(scores)
+        println("  " + name + " - Average: " + to_string(avg))
+    }
+}
+
+// Struct definitions
+struct Point {
+    x: int
+    y: int
+}
+
+impl Point {
+    fn distance(self) {
+        sqrt(pow(self.x, 2) + pow(self.y, 2))
+    }
+}
+
+struct Circle {
+    center: Point
+    radius: float
+}
+
+impl Circle {
+    fn area(self) {
+        3.14159265 * self.radius * self.radius
+    }
+}
+
+// Enum definitions
+enum Result {
+    Ok(value)
+    Error(msg)
+}
+
+main()
