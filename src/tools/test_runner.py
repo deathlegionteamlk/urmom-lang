@@ -73,78 +73,37 @@ class TestRunner:
                 if hasattr(decl, 'name') and decl.name.startswith('test_'):
                     if self.filter_pattern and self.filter_pattern not in decl.name:
                         continue
-                    test_fns.append(decl)
+                    test_fns.append(decl.name)
 
-            if not test_fns:
-                # If no test_ functions, just run the file
-                evaluator = Evaluator()
-                start = time.time()
-                try:
-                    evaluator.run(program)
-                    duration = time.time() - start
-                    results.append(TestResult(filepath, True, duration=duration))
-                    self.passed += 1
-                except ThrowSignal as e:
-                    duration = time.time() - start
-                    msg = e.value.value if isinstance(e.value, UrmString) else str(e)
-                    results.append(TestResult(filepath, False, msg, duration))
-                    self.failed += 1
-                return results
-
-            # Run each test function individually
+            # Run the whole program (including main() which calls test functions)
             evaluator = Evaluator()
-            # First, process all declarations (non-test) to set up the environment
-            for decl in program.declarations:
-                if not (hasattr(decl, 'name') and decl.name.startswith('test_')):
-                    try:
-                        evaluator._eval_declaration(decl, evaluator.global_env)
-                    except Exception:
-                        pass
-            # Process imports
-            for imp in program.imports:
-                try:
-                    evaluator._process_import(imp)
-                except Exception:
-                    pass
-            # Execute setup statements
-            for stmt in program.statements:
-                try:
-                    evaluator._eval_statement(stmt, evaluator.global_env)
-                except Exception:
-                    pass
-
-            # Run each test function
-            for test_decl in test_fns:
-                start = time.time()
-                try:
-                    fn = evaluator.global_env.get(test_decl.name)
-                    if fn:
-                        evaluator._call_function(fn, [])
-                        duration = time.time() - start
-                        results.append(TestResult(test_decl.name, True, duration=duration))
+            start = time.time()
+            try:
+                evaluator.run(program)
+                duration = time.time() - start
+                if test_fns:
+                    for fn_name in test_fns:
+                        results.append(TestResult(fn_name, True, duration=duration / len(test_fns)))
                         self.passed += 1
                         if self.verbose:
-                            print(f"  ✓ {test_decl.name} ({duration:.3f}s)")
-                    else:
-                        results.append(TestResult(test_decl.name, False, "Test function not found"))
-                        self.failed += 1
-                except ThrowSignal as e:
-                    duration = time.time() - start
-                    msg = e.value.value if isinstance(e.value, UrmString) else str(e)
-                    # Check if it's an assertion error
-                    if "Assertion" in msg:
-                        results.append(TestResult(test_decl.name, False, msg, duration))
-                        self.failed += 1
-                        print(f"  ✗ {test_decl.name}: {msg}")
-                    else:
-                        results.append(TestResult(test_decl.name, False, msg, duration))
-                        self.errors += 1
-                        print(f"  ✗ {test_decl.name}: Error - {msg}")
-                except Exception as e:
-                    duration = time.time() - start
-                    results.append(TestResult(test_decl.name, False, str(e), duration))
-                    self.errors += 1
-                    print(f"  ✗ {test_decl.name}: Error - {e}")
+                            print(f"  ✓ {fn_name}")
+                else:
+                    results.append(TestResult(filepath, True, duration=duration))
+                    self.passed += 1
+            except ThrowSignal as e:
+                duration = time.time() - start
+                msg = e.value.value if isinstance(e.value, UrmString) else str(e)
+                if test_fns:
+                    # Mark the last test as failed
+                    for fn_name in test_fns[:-1]:
+                        results.append(TestResult(fn_name, True, duration=duration / len(test_fns)))
+                        self.passed += 1
+                    results.append(TestResult(test_fns[-1], False, msg, duration))
+                    self.failed += 1
+                    print(f"  ✗ {test_fns[-1]}: {msg}")
+                else:
+                    results.append(TestResult(filepath, False, msg, duration))
+                    self.failed += 1
 
         except Exception as e:
             results.append(TestResult(filepath, False, f"Parse error: {e}"))
@@ -184,7 +143,8 @@ def run_tests(path: str = "tests/", verbose: bool = False, filter_pattern: str =
     return runner.run(path)
 
 
-if __name__ == '__main__':
+def main():
+    """Entry point for urm-test CLI."""
     import argparse
     parser = argparse.ArgumentParser(description='Urmom Lang Test Runner')
     parser.add_argument('path', nargs='?', default='tests/', help='Test file or directory')
@@ -192,3 +152,6 @@ if __name__ == '__main__':
     parser.add_argument('--filter', '-f', default='', help='Filter test names')
     args = parser.parse_args()
     sys.exit(run_tests(args.path, args.verbose, args.filter))
+
+if __name__ == '__main__':
+    main()

@@ -326,7 +326,7 @@ def start_repl() -> int:
             if (len(program.statements) == 1 and
                 hasattr(program.statements[0], 'expression') and
                 not isinstance(program.statements[0], (type(None),))):
-                from src.ast import ExpressionStmt
+                from src.nodes import ExpressionStmt
                 if isinstance(program.statements[0], ExpressionStmt):
                     result = evaluator._eval_expr(program.statements[0].expression, env)
                     print(f"= {evaluator._value_to_display(result)}")

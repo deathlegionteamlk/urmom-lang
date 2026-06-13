@@ -15,7 +15,7 @@ import os
 import sys
 import re
 from typing import Any, Optional, Callable
-from src.ast import *
+from src.nodes import *
 from src.lexer.tokens import TokenType
 
 

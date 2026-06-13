@@ -5,7 +5,7 @@ Recursive descent parser that converts tokens into an AST.
 
 from __future__ import annotations
 from src.lexer.tokens import Token, TokenType
-from src.ast import *
+from src.nodes import *
 
 
 class ParseError(Exception):
