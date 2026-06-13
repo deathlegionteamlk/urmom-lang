@@ -1,1 +1,1 @@
-"""Urmom Lang Standard Library modules."""
+"""Urmom Lang Standard Library"""

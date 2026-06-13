@@ -1,1 +1,1 @@
-"""Urmom Lang Concurrency primitives."""
+"""Urmom Lang Concurrency Primitives"""

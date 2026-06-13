@@ -1,63 +1,49 @@
 // Control Flow in Urmom Lang
-// if/elif/else, for, while, match
+let score = 85
 
-fn main() {
-    // If-elif-else
-    println("=== If/Elif/Else ===")
-    let score = 85
-
-    if score >= 90 {
-        println("Grade: A")
-    } elif score >= 80 {
-        println("Grade: B")
-    } elif score >= 70 {
-        println("Grade: C")
-    } else {
-        println("Grade: F")
-    }
-
-    // For-in loop
-    println("\n=== For-In Loop ===")
-    let fruits = ["apple", "banana", "cherry", "date"]
-    for fruit in fruits {
-        println("  Fruit: " + fruit)
-    }
-
-    // Range iteration
-    println("\n=== Range Iteration ===")
-    for i in range(1, 6) {
-        println("  Count: " + to_string(i))
-    }
-
-    // While loop
-    println("\n=== While Loop ===")
-    let mut countdown = 5
-    while countdown > 0 {
-        println("  T-minus " + to_string(countdown))
-        countdown -= 1
-    }
-    println("  Lift off!")
-
-    // Match statement
-    println("\n=== Match Statement ===")
-    let day = "Tuesday"
-    match day {
-        "Monday" => {
-            println("Start of the work week!")
-        }
-        "Friday" => {
-            println("Almost weekend!")
-        }
-        "Saturday" => {
-            println("Weekend vibes!")
-        }
-        "Sunday" => {
-            println("Rest day!")
-        }
-        _ => {
-            println("Just a regular " + day)
-        }
-    }
+// If/elif/else
+if score >= 90 {
+    println("Grade: A")
+} elif score >= 80 {
+    println("Grade: B")
+} elif score >= 70 {
+    println("Grade: C")
+} else {
+    println("Grade: F")
 }
 
-main()
+// While loop
+let mut i = 0
+while i < 5 {
+    println("while: " + str(i))
+    i = i + 1
+}
+
+// For-in loop
+for item in [10, 20, 30, 40, 50] {
+    println("for: " + str(item))
+}
+
+// Range iteration
+for n in range(5) {
+    println("range: " + str(n))
+}
+
+// Infinite loop with break
+let mut count = 0
+loop {
+    count = count + 1
+    if count >= 3 {
+        break
+    }
+}
+println("Loop count: " + str(count))
+
+// Match statement
+let value = 42
+match value {
+    0 => println("zero")
+    1 => println("one")
+    42 => println("the answer!")
+    _ => println("something else: " + str(value))
+}

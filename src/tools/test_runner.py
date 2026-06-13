@@ -1,157 +1,125 @@
-#!/usr/bin/env python3
 """
-Urmom Lang Test Runner (urm-test)
-Discovers and runs test files.
-
-Usage:
-    urm-test [path]           Run tests (default: tests/)
-    urm-test --verbose        Show detailed output
-    urm-test --filter <name>  Run only tests matching name
+Urmom Lang Test Runner
+=====================
+Discovers and runs test functions from .urm files.
 """
 
 import os
 import sys
 import time
-import re
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Ensure correct import path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from src.lexer import Lexer
 from src.parser import Parser
-from src.evaluator import Evaluator, ThrowSignal, UrmString, UrmBool, UrmNone, URM_NONE
+from src.runtime import Evaluator, UrmRuntimeError
+from src.ast import FuncDecl
 
 
-class TestResult:
-    def __init__(self, name: str, passed: bool, error: str = "", duration: float = 0.0):
-        self.name = name
-        self.passed = passed
-        self.error = error
-        self.duration = duration
+def main():
+    """CLI entry point for the test runner."""
+    import argparse
+    parser = argparse.ArgumentParser(prog='urm-test', description='Urmom Lang Test Runner')
+    parser.add_argument('path', nargs='?', default='tests/', help='Test directory')
+    args = parser.parse_args()
+    
+    runner = TestRunner()
+    return runner.run(args.path)
 
 
 class TestRunner:
-    def __init__(self, verbose: bool = False, filter_pattern: str = ""):
-        self.verbose = verbose
-        self.filter_pattern = filter_pattern
-        self.results: list[TestResult] = []
+    """Runs Urmom Lang test files and reports results."""
+    
+    def __init__(self):
         self.passed = 0
         self.failed = 0
-        self.errors = 0
-
-    def discover_tests(self, path: str) -> list[str]:
-        """Find all test files."""
+        self.errors = []
+    
+    def run(self, path: str) -> int:
+        """Run all tests in the given path (file or directory)."""
+        print(f"\n{'='*60}")
+        print(f"  Urmom Lang Test Runner v0.2.0")
+        print(f"{'='*60}\n")
+        
+        start = time.time()
+        test_files = self._discover(path)
+        
+        if not test_files:
+            print(f"No test files found in: {path}")
+            return 1
+        
+        print(f"Found {len(test_files)} test file(s)\n")
+        
+        for filepath in test_files:
+            self._run_file(filepath)
+        
+        elapsed = time.time() - start
+        
+        print(f"\n{'='*60}")
+        print(f"  Results: {self.passed} passed, {self.failed} failed")
+        print(f"  Time: {elapsed:.3f}s")
+        print(f"{'='*60}")
+        
+        if self.errors:
+            print(f"\nFailures:")
+            for name, err in self.errors:
+                print(f"  ✗ {name}: {err}")
+        
+        return 0 if self.failed == 0 else 1
+    
+    def _discover(self, path: str) -> list:
+        """Discover test files."""
         test_files = []
         if os.path.isfile(path):
-            if path.endswith('.urm') or 'test' in os.path.basename(path).lower():
+            if path.endswith('.urm'):
                 test_files.append(path)
         elif os.path.isdir(path):
             for root, dirs, files in os.walk(path):
                 for f in sorted(files):
-                    if f.endswith('.urm') or 'test' in f.lower():
+                    if f.startswith('test_') and f.endswith('.urm'):
                         test_files.append(os.path.join(root, f))
         return test_files
-
-    def run_test_file(self, filepath: str) -> list[TestResult]:
-        """Run all tests in a single file."""
-        results = []
-        try:
-            with open(filepath, 'r') as f:
-                source = f.read()
-        except Exception as e:
-            results.append(TestResult(filepath, False, f"Cannot read file: {e}"))
-            return results
-
+    
+    def _run_file(self, filepath: str):
+        """Run all test functions in a file."""
+        print(f"Running: {filepath}")
+        
+        with open(filepath, 'r', encoding='utf-8') as f:
+            source = f.read()
+        
+        evaluator = Evaluator()
+        
         try:
             lexer = Lexer(source, filepath)
             tokens = lexer.tokenize()
-            parser = Parser(tokens)
+            parser = Parser(tokens, filepath)
             program = parser.parse()
-
-            # Find test functions (those starting with "test_")
-            test_fns = []
+            
+            # Execute all declarations (including test functions)
             for decl in program.declarations:
-                if hasattr(decl, 'name') and decl.name.startswith('test_'):
-                    if self.filter_pattern and self.filter_pattern not in decl.name:
-                        continue
-                    test_fns.append(decl.name)
-
-            # Run the whole program (including main() which calls test functions)
-            evaluator = Evaluator()
-            start = time.time()
-            try:
-                evaluator.run(program)
-                duration = time.time() - start
-                if test_fns:
-                    for fn_name in test_fns:
-                        results.append(TestResult(fn_name, True, duration=duration / len(test_fns)))
-                        self.passed += 1
-                        if self.verbose:
-                            print(f"  ✓ {fn_name}")
-                else:
-                    results.append(TestResult(filepath, True, duration=duration))
-                    self.passed += 1
-            except ThrowSignal as e:
-                duration = time.time() - start
-                msg = e.value.value if isinstance(e.value, UrmString) else str(e)
-                if test_fns:
-                    # Mark the last test as failed
-                    for fn_name in test_fns[:-1]:
-                        results.append(TestResult(fn_name, True, duration=duration / len(test_fns)))
-                        self.passed += 1
-                    results.append(TestResult(test_fns[-1], False, msg, duration))
-                    self.failed += 1
-                    print(f"  ✗ {test_fns[-1]}: {msg}")
-                else:
-                    results.append(TestResult(filepath, False, msg, duration))
-                    self.failed += 1
-
+                evaluator._exec_decl(decl, evaluator.global_env)
+            for stmt in program.statements:
+                evaluator._exec_stmt(stmt, evaluator.global_env)
+            
+            # Run test functions
+            for decl in program.declarations:
+                if isinstance(decl, FuncDecl) and decl.name.startswith('test_'):
+                    self._run_test(decl.name, evaluator)
+            
         except Exception as e:
-            results.append(TestResult(filepath, False, f"Parse error: {e}"))
-            self.errors += 1
-
-        return results
-
-    def run(self, path: str = "tests/") -> int:
-        """Run all discovered tests."""
-        test_files = self.discover_tests(path)
-        if not test_files:
-            print(f"No test files found in '{path}'")
-            return 0
-
-        print(f"Urmom Lang Test Runner")
-        print(f"Found {len(test_files)} test file(s)\n")
-
-        start_time = time.time()
-        for filepath in test_files:
-            print(f"Running: {filepath}")
-            self.run_test_file(filepath)
-            print()
-
-        total_time = time.time() - start_time
-        total = self.passed + self.failed + self.errors
-
-        print("=" * 50)
-        print(f"Results: {self.passed} passed, {self.failed} failed, {self.errors} errors")
-        print(f"Total: {total} test(s) in {total_time:.3f}s")
-        print("=" * 50)
-
-        return 1 if (self.failed + self.errors) > 0 else 0
-
-
-def run_tests(path: str = "tests/", verbose: bool = False, filter_pattern: str = "") -> int:
-    runner = TestRunner(verbose=verbose, filter_pattern=filter_pattern)
-    return runner.run(path)
-
-
-def main():
-    """Entry point for urm-test CLI."""
-    import argparse
-    parser = argparse.ArgumentParser(description='Urmom Lang Test Runner')
-    parser.add_argument('path', nargs='?', default='tests/', help='Test file or directory')
-    parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
-    parser.add_argument('--filter', '-f', default='', help='Filter test names')
-    args = parser.parse_args()
-    sys.exit(run_tests(args.path, args.verbose, args.filter))
-
-if __name__ == '__main__':
-    main()
+            print(f"  ✗ Failed to parse: {e}")
+            self.failed += 1
+            self.errors.append((filepath, str(e)))
+    
+    def _run_test(self, name: str, evaluator: Evaluator):
+        """Run a single test function."""
+        try:
+            fn = evaluator.global_env.get(name)
+            evaluator._call_function(fn, [])
+            self.passed += 1
+            print(f"  ✓ {name}")
+        except Exception as e:
+            self.failed += 1
+            self.errors.append((name, str(e)))
+            print(f"  ✗ {name}: {e}")

@@ -1,144 +1,94 @@
 # Urmom Lang
 
-<p align="center">
-  <img src="docs/mascot.png" alt="Urmom Lang Mascot - The Friendly Gopher" width="200"/>
-</p>
+<div align="center">
 
-<p align="center">
-  <strong>A modern, simple, concurrent programming language</strong><br>
-  <em>By the Death Legion Team</em>
-</p>
+**A standalone programming language with first-class concurrency, pattern matching, pipe operators, and a comprehensive standard library.**
 
-<p align="center">
-  <img src="https://img.shields.io/badge/version-0.1.0-teal" alt="Version"/>
-  <img src="https://img.shields.io/badge/license-MIT-orange" alt="License"/>
-  <img src="https://img.shields.io/badge/status-alpha-yellow" alt="Status"/>
-</p>
+*By Death Legion Team*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-0.2.0-green.svg)](https://github.com/death-legion/urmom-lang)
+
+</div>
 
 ---
 
 ## What is Urmom Lang?
 
-Urmom Lang is an open-source programming language designed from the ground up to make building software **simple**, **reliable**, and **efficient**. With a modern syntax that's easy to pick up and first-class support for concurrency, Urmom Lang is perfect for building fast backend servers and high-performance network tools.
+Urmom Lang is a **standalone programming language** — it has its own syntax, own object model, own type system, own concurrency primitives, and own standard library. It is NOT a wrapper around Python or any other language. The language features:
 
-### Key Features
-
-- **Simple & Modern Syntax** — Clean, minimal syntax inspired by the best parts of Go, Rust, and Python. No unnecessary complexity.
-- **First-Class Concurrency** — Built-in `spawn`, `chan`, and `await` primitives make parallel programming feel natural.
-- **Comprehensive Standard Library** — Everything you need built-in: networking, file handling, data manipulation, math, regex, and more.
-- **Memory Safety** — Immutable by default with explicit `mut` for mutable variables. No null pointer surprises.
-- **Error Handling** — `try/catch/finally` with `throw` for robust error management.
-- **Rich Type System** — Structs, enums, traits, and type annotations that don't get in your way.
-- **Full Tooling** — Compiler, package manager (`urm-pkg`), test runner (`urm-test`), formatter, and REPL included.
-- **Friendly Gopher Mascot** — Because programming should be fun! 🐿️
-
----
+- **Simple & Modern Syntax** — Clean, readable, and easy to learn
+- **Immutable by Default** — `let` for immutable, `let mut` for mutable
+- **First-Class Concurrency** — `spawn`, `chan` (channels), futures, mutexes
+- **Pattern Matching** — Powerful `match` expressions with destructuring
+- **Pipe Operator** — `|>` for elegant function chaining
+- **Null-Safe Access** — `?.` operator for safe navigation
+- **Struct/Enum/Trait/Impl** — Full type system with traits and implementations
+- **Comprehensive Standard Library** — 15+ stdlib modules
+- **Full Tooling** — Compiler/interpreter, package manager, test framework, REPL
 
 ## Quick Start
 
-### Installation
-
 ```bash
-# Clone the repository
-git clone https://github.com/death-legion/urmom-lang.git
-cd urmom-lang
+# Install
+pip install urmom-lang
 
-# Install (requires Python 3.8+)
-pip install -e .
+# Run a file
+urm run hello.urm
 
-# Verify installation
-urm version
+# Start REPL
+urm repl
+
+# Evaluate expression
+urm eval 'println("Hello, World!")'
+
+# Run tests
+urm test tests/
+
+# Check syntax
+urm check myfile.urm
 ```
 
-### Hello World
+## Hello World
 
 ```urm
-fn main() {
-    println("Hello, World from Urmom Lang!")
-}
-
-main()
+println("Hello, World from Urmom Lang!")
 ```
-
-Run it:
-```bash
-urm run hello.urm
-```
-
-### Interactive REPL
-
-```bash
-urm repl
-```
-
-```
-  _   _                 _       __                          _
- | | | | ___  _ __ ___ | |__   / _|_ __ ___   ___ __ _  ___| |
- | | | |/ _ \| '_ ` _ \| '_ \ | |_| '_ ` _ \ / __/ _` |/ _ \ |
- | |_| | (_) | | | | | | |_) ||  _| | | | | | (_| (_| |  __/ |
-  \___/ \___/|_| |_| |_|_.__/ |_| |_| |_| |_|\___\__, |\___|_|
-                                                   |___/
-  Urmom Lang v0.1.0 by Death Legion Team
-  Mascot: The Friendly Gopher
-
-urm> println("Hello!")
-Hello!
-urm> let x = 42
-urm> x * 2
-= 84
-```
-
----
 
 ## Language Tour
 
-### Variables & Constants
+### Variables
 
 ```urm
-// Immutable by default
-let name = "Urmom Lang"
-let version = 0.1
-
-// Mutable variables
-let mut counter = 0
-counter += 1
-
-// Constants (compile-time)
-const MAX_SIZE = 1024
-const PI = 3.14159265
+let x = 10              // Immutable (default)
+let mut y = 20          // Mutable
+const VERSION = "0.2.0" // Constant
 ```
 
 ### Functions
 
 ```urm
-// Basic function
-fn add(a, b) {
-    a + b  // Implicit return for last expression
+fn greet(name) {
+    println("Hello, " + name + "!")
 }
 
-// With default parameters
-fn power(base, exp = 2) {
-    pow(base, exp)
-}
-
-// Variadic functions
-fn sum_all(...numbers) {
-    let mut total = 0
-    for n in numbers {
-        total += n
-    }
-    total
-}
-
-// Lambda / Anonymous functions
+// Lambda expressions
 let double = fn(x) => x * 2
-let square = fn(x) { x * x }
+let add = fn(a, b) => a + b
+
+// Closures
+fn make_counter(start) {
+    let mut count = start
+    fn() {
+        count = count + 1
+        count
+    }
+}
 ```
 
 ### Control Flow
 
 ```urm
-// If-elif-else
 if score >= 90 {
     println("A")
 } elif score >= 80 {
@@ -147,92 +97,99 @@ if score >= 90 {
     println("C")
 }
 
-// For-in loop
-for item in collection {
+// For-in loops
+for item in [10, 20, 30] {
     println(item)
 }
 
-// While loop
-while condition {
-    // ...
+// While loops
+let mut i = 0
+while i < 10 {
+    i = i + 1
 }
 
-// Match statement
-match value {
-    "option1" => { handle_option1() }
-    "option2" => { handle_option2() }
-    _ => { handle_default() }
+// Infinite loops
+loop {
+    if done { break }
 }
 ```
 
-### Data Structures
+### Pattern Matching
 
 ```urm
-// Arrays
-let fruits = ["apple", "banana", "cherry"]
-fruits[0]  // "apple"
-
-// Dictionaries
-let config = {
-    "host": "localhost",
-    "port": 8080,
-    "debug": true
+match value {
+    0 => println("zero")
+    1 => println("one")
+    42 => println("the answer!")
+    _ => println("something else")
 }
-config["host"]  // "localhost"
+```
 
-// Structs
+### Structs
+
+```urm
 struct Point {
     x: int
     y: int
-}
-
-impl Point {
-    fn distance(self) {
-        sqrt(pow(self.x, 2) + pow(self.y, 2))
+    
+    fn magnitude(self) {
+        sqrt(self.x * self.x + self.y * self.y)
     }
 }
 
 let p = Point(3, 4)
-println(p.distance())  // 5.0
+println(p.magnitude())  // 5.0
+```
 
-// Enums
-enum Result {
-    Ok(value)
-    Error(message)
+### Enums
+
+```urm
+enum Color {
+    Red
+    Green
+    Blue
+}
+
+let c = Color::Red
+match c {
+    Color::Red => println("Red!")
+    _ => println("Other!")
 }
 ```
 
 ### Concurrency
 
-Urmom Lang's concurrency model is inspired by Go's goroutines and channels:
-
 ```urm
-// Spawn a concurrent task
+// Spawn a task
 let task = spawn fn() {
-    // Heavy computation
-    let mut sum = 0
-    for i in range(1, 1000001) {
-        sum += i
-    }
-    sum
+    42
 }
+println(task.get_value())  // 42
 
-// Await the result
-let result = task.get_value()
-println("Sum: " + to_string(result))
-
-// Channels for communication
-let ch = chan(10)  // Buffered channel
-
-// Producer
+// Channels
+let ch = chan(10)
 spawn fn() {
-    for i in range(1, 11) {
+    for i in range(5) {
         ch.send(i)
     }
+    ch.close()
 }
 
-// Consumer
-let value = ch.receive()
+// Parallel processing
+let mut futures = []
+for n in [1, 2, 3, 4, 5] {
+    let num = n
+    let f = spawn fn() { num * num }
+    push(futures, f)
+}
+```
+
+### Pipe Operator
+
+```urm
+let result = [1, 2, 3, 4, 5]
+    |> fn(arr) => map(fn(x) => x * 2, arr)
+    |> fn(arr) => filter(fn(x) => x > 5, arr)
 ```
 
 ### Error Handling
@@ -240,174 +197,123 @@ let value = ch.receive()
 ```urm
 try {
     let result = risky_operation()
-    println(result)
-} catch e {
-    println("Error: " + to_string(e))
+} catch as err {
+    println("Error: " + str(err))
 } finally {
-    cleanup()
-}
-
-// Throw custom errors
-fn validate(age) {
-    if age < 0 {
-        throw "Age cannot be negative"
-    }
-    if age > 150 {
-        throw "Age seems unrealistic"
-    }
+    println("Cleanup")
 }
 
 // Assertions
-assert(x > 0, "x must be positive")
-assert_eq(expected, actual)
+assert 1 + 1 == 2, "Math works"
 ```
 
----
+### String Interpolation
+
+```urm
+let name = "World"
+println("Hello, ${name}!")
+```
 
 ## Standard Library
 
 | Module | Description |
 |--------|-------------|
-| `std.io` | Input/output operations (`print`, `println`, `read_line`) |
-| `std.fs` | File system (`read_file`, `write_file`, `exists`, `mkdir`, `list_dir`) |
-| `std.net` | Networking (`http_get`, `http_post`, `resolve_host`) |
-| `std.math` | Math functions (`sin`, `cos`, `sqrt`, `pow`, `log`, constants) |
-| `std.time` | Time operations (`now`, `format`, `sleep`, `parse`) |
-| `std.data` | Data manipulation (`parse_json`, `to_json`, `parse_csv`, `encode_base64`) |
-| `std.rand` | Random generation (`int`, `float`, `choice`, `shuffle`, `seed`) |
-| `std.regex` | Regular expressions (`match`, `find_all`, `replace`) |
-| `std.concurrency` | Concurrency primitives (`spawn`, `chan`) |
+| `std.io` | Input/output operations |
+| `std.fs` | File system operations |
+| `std.net` | HTTP client, DNS, URL parsing |
+| `std.math` | Mathematical functions (trig, log, etc.) |
+| `std.time` | Time formatting, timestamps, sleep |
+| `std.data` | JSON, CSV, sorting, grouping |
+| `std.rand` | Random number generation |
+| `std.regex` | Regular expressions |
+| `std.concurrency` | Spawn, channels, mutexes |
+| `std.crypto` | MD5, SHA256, SHA512 hashing |
+| `std.encoding` | Base64, hex, URL encoding |
+| `std.os` | Environment variables, platform info |
+| `std.process` | Process execution |
+| `std.path` | Path manipulation |
+| `std.uuid` | UUID generation |
+| `std.collections` | Permutations, combinations, counters |
 
-### Using the Standard Library
+### Built-in Functions
 
-```urm
-// Import specific functions
-from std.fs import read_file, write_file
-from std.net import http_get
+**I/O:** `print`, `println`, `read_line`, `read_file`, `write_file`
 
-// Or import the whole module
-import std.math
+**Types:** `int`, `float`, `str`, `bool`, `type_of`
 
-let content = read_file("data.txt")
-let pi = std.math.pi
-```
+**Collections:** `len`, `range`, `map`, `filter`, `reduce`, `sort`, `reverse`, `flatten`, `unique`, `min`, `max`, `sum`, `any`, `all`, `contains`, `find`, `chunk`, `join`, `split`, `push`, `pop`
 
----
+**String:** `trim`, `upper`, `lower`, `replace`, `starts_with`, `ends_with`, `repeat`, `format`, `pad_left`, `pad_right`
 
-## CLI Tools
+**Math:** `abs`, `floor`, `ceil`, `round`, `sqrt`, `pow`, `log`, `sin`, `cos`, `tan`
 
-### `urm` — Main Command
+**Time:** `time_now`, `time_format`, `sleep`
+
+**Random:** `random`, `random_int`, `random_choice`, `random_shuffle`
+
+**Concurrency:** `spawn`, `chan`, `select`, `mutex`
+
+**Crypto:** `md5`, `sha256`, `sha512`
+
+**Encoding:** `base64_encode`, `base64_decode`, `hex_encode`, `hex_decode`, `url_encode`, `url_decode`
+
+**JSON:** `json_parse`, `json_stringify`
+
+**Regex:** `regex`, `regex_match`, `regex_search`, `regex_replace`, `regex_split`, `regex_find_all`
+
+**UUID:** `uuid`, `uuid_v4`
+
+**OS:** `env_get`, `env_set`, `cwd`, `args`, `exec`, `exit`
+
+**FS:** `file_exists`, `is_dir`, `is_file`, `list_dir`, `make_dir`, `remove`, `rename`, `copy`, `path_join`
+
+**Iterator:** `iterate`, `take`, `drop`, `cycle`, `chain`, `permutations`, `combinations`, `group_by`, `partition`
+
+**Utility:** `memoize`, `deep_copy`, `deep_eq`
+
+## CLI Commands
 
 ```bash
-urm run <file.urm>       # Run a program
-urm eval <expression>     # Evaluate an expression
-urm repl                  # Interactive REPL
-urm check <file.urm>      # Check syntax
-urm fmt <file.urm>        # Format code
-urm init <project-name>   # Create new project
-urm test [path]           # Run tests
+urm run <file>       # Run an Urmom Lang file
+urm eval <code>      # Evaluate an expression
+urm repl             # Start interactive REPL
+urm check <file>     # Check syntax
+urm fmt <file>       # Format source code
+urm init <name>      # Initialize a new project
+urm test <dir>       # Run tests
 ```
 
-### `urm-pkg` — Package Manager
+## Package Manager
 
 ```bash
-urm-pkg init              # Initialize package
-urm-pkg install <pkg>     # Install a package
-urm-pkg uninstall <pkg>   # Remove a package
-urm-pkg list              # List installed packages
-urm-pkg search <query>    # Search for packages
-urm-pkg publish           # Publish to registry
-urm-pkg update            # Update all packages
+urm-pkg init <name>     # Initialize a package
+urm-pkg install <pkg>   # Install a package
+urm-pkg uninstall <pkg> # Remove a package
+urm-pkg list            # List installed packages
+urm-pkg search <query>  # Search packages
+urm-pkg publish         # Publish a package
+urm-pkg update [pkg]    # Update packages
 ```
-
-### `urm-test` — Test Runner
-
-```bash
-urm-test                  # Run all tests
-urm-test tests/           # Run tests in directory
-urm-test --verbose        # Detailed output
-urm-test --filter test_foo  # Run specific test
-```
-
----
 
 ## Project Structure
 
 ```
-my-project/
-├── package.urm        # Package manifest
-├── urm.lock           # Dependency lock file
-├── README.md
+urmom-lang/
 ├── src/
-│   ├── main.urm       # Entry point
-│   └── utils.urm      # Module
-├── tests/
-│   └── test_main.urm  # Tests
-└── docs/
-    └── SPEC.md        # Language spec
+│   ├── vm/           # Virtual Machine (opcodes, object model)
+│   ├── lexer/        # Tokenizer
+│   ├── parser/       # Recursive descent parser
+│   ├── ast/          # Abstract Syntax Tree nodes
+│   ├── runtime/      # Evaluator/VM runtime
+│   ├── stdlib/       # Standard library modules
+│   ├── tools/        # Package manager, test runner
+│   └── cli.py        # Command-line interface
+├── examples/         # Example programs
+├── tests/            # Test suite
+├── docs/             # Documentation
+└── pyproject.toml    # Package configuration
 ```
-
----
-
-## Built-in Functions
-
-| Function | Description |
-|----------|-------------|
-| `println(...)` | Print with newline |
-| `print(...)` | Print without newline |
-| `len(x)` | Length of string/array/dict |
-| `type_of(x)` | Get type name |
-| `to_string(x)` | Convert to string |
-| `to_int(x)` | Convert to integer |
-| `to_float(x)` | Convert to float |
-| `range(start, end)` | Generate range |
-| `map(fn, arr)` | Map over array |
-| `filter(fn, arr)` | Filter array |
-| `reduce(fn, arr, init)` | Reduce array |
-| `sort(arr)` | Sort array |
-| `reverse(arr)` | Reverse array |
-| `join(sep, arr)` | Join array to string |
-| `split(str, sep)` | Split string |
-| `assert(cond, msg)` | Assert condition |
-| `assert_eq(a, b)` | Assert equality |
-| `panic(msg)` | Unrecoverable error |
-| `spawn(fn)` | Run concurrently |
-| `chan(cap)` | Create channel |
-
----
-
-## Language Design Philosophy
-
-1. **Simplicity over complexity** — Features should solve real problems, not create new ones.
-2. **Concurrency by default** — Building parallel software shouldn't require a PhD.
-3. **Explicit over implicit** — Mutable state should be declared, not assumed.
-4. **Batteries included** — The standard library should cover 90% of common needs.
-5. **Error handling is not optional** — Robust error handling primitives built into the language.
-6. **Fun matters** — Programming should be enjoyable. The Friendly Gopher reminds us not to take ourselves too seriously.
-
----
-
-## Contributing
-
-We welcome contributions! Here's how:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing`)
-3. Write your changes and tests
-4. Run the test suite (`urm-test`)
-5. Commit with a descriptive message
-6. Open a Pull Request
-
----
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-## Team
-
-**Death Legion Team** — Building the future of simple, concurrent programming.
-
-*Mascot: The Friendly Gopher* 🐿️
+MIT License — Copyright (c) 2024 Death Legion Team

@@ -1,95 +1,59 @@
 // Data Structures in Urmom Lang
-// Arrays, Dicts, Structs, Enums
 
-fn main() {
-    // Arrays
-    println("=== Arrays ===")
-    let fruits = ["apple", "banana", "cherry"]
-    println("Fruits: " + join(", ", fruits))
-    println("First: " + fruits[0])
-    println("Length: " + to_string(len(fruits)))
+// Arrays
+let fruits = ["apple", "banana", "cherry"]
+println("fruits: " + str(fruits))
+println("first: " + fruits[0])
+println("length: " + str(len(fruits)))
 
-    append(fruits, "date")
-    println("After append: " + join(", ", fruits))
+// Array methods
+let nums = [3, 1, 4, 1, 5, 9, 2, 6]
+println("sorted: " + str(sort(nums)))
+println("reversed: " + str(reverse(nums)))
+println("sum: " + str(sum(nums)))
+println("min: " + str(min(nums)))
+println("max: " + str(max(nums)))
 
-    let sorted_nums = sort([5, 3, 8, 1, 9, 2, 7])
-    println("Sorted: " + join(", ", sorted_nums))
-
-    // Dictionaries
-    println("\n=== Dictionaries ===")
-    let person = {
-        "name": "Gopher",
-        "age": 5,
-        "role": "Mascot"
-    }
-    println("Name: " + person["name"])
-    println("Age: " + to_string(person["age"]))
-    println("Role: " + person["role"])
-
-    person["language"] = "Urmom Lang"
-    println("Language: " + person["language"])
-    println("Keys: " + join(", ", keys(person)))
-
-    // Structs
-    println("\n=== Structs ===")
-    let point = Point(3, 4)
-    println("Point: (" + to_string(point.x) + ", " + to_string(point.y) + ")")
-    println("Distance from origin: " + to_string(point.distance()))
-
-    let circle = Circle(Point(0, 0), 5.0)
-    println("Circle area: " + to_string(circle.area()))
-
-    // Enum-like patterns
-    println("\n=== Enums ===")
-    let status = Ok("Operation succeeded")
-    println("Status: " + to_string(status))
-
-    let err_status = Error("Something went wrong")
-    println("Error: " + to_string(err_status))
-
-    // Nested data structures
-    println("\n=== Nested Structures ===")
-    let users = [
-        {"name": "Alice", "scores": [95, 87, 92]},
-        {"name": "Bob", "scores": [88, 91, 79]},
-        {"name": "Charlie", "scores": [94, 96, 89]},
-    ]
-
-    for user in users {
-        let name = user["name"]
-        let scores = user["scores"]
-        let avg = reduce(fn(a, b) => a + b, scores, 0) / len(scores)
-        println("  " + name + " - Average: " + to_string(avg))
-    }
+// Dictionaries
+let person = {
+    "name": "Gopher",
+    "age": 25,
+    "lang": "Urmom"
 }
+println("person: " + str(person))
+println("name: " + str(person["name"]))
 
-// Struct definitions
-struct Point {
-    x: int
-    y: int
-}
+// Dict methods
+println("keys: " + str(person.keys()))
+println("values: " + str(person.values()))
 
-impl Point {
-    fn distance(self) {
-        sqrt(pow(self.x, 2) + pow(self.y, 2))
-    }
-}
+// Tuples
+let coord = (10, 20)
+println("coord: " + str(coord))
 
-struct Circle {
-    center: Point
-    radius: float
-}
+// Sets
+let unique = {1, 2, 3, 3, 2, 1}
+println("unique: " + str(unique))
 
-impl Circle {
-    fn area(self) {
-        3.14159265 * self.radius * self.radius
-    }
-}
+// Ranges
+let r = range(1, 6)
+println("range: " + str(r))
 
-// Enum definitions
-enum Result {
-    Ok(value)
-    Error(msg)
-}
+// Nested structures
+let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+println("matrix: " + str(matrix))
+println("matrix[1][2]: " + str(matrix[1][2]))
 
-main()
+// String operations
+let greeting = "Hello, Urmom Lang!"
+println("upper: " + upper(greeting))
+println("lower: " + lower(greeting))
+println("length: " + str(len(greeting)))
+println("split: " + str(split(greeting, " ")))
+println("contains: " + str(contains(greeting, "Urmom")))
+
+// JSON
+let data = json_stringify({"key": "value", "num": 42})
+println("JSON: " + data)
+let parsed = json_parse(data)
+println("parsed: " + str(parsed))

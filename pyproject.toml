@@ -4,16 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "urmom-lang"
-version = "0.1.0"
-description = "Urmom Lang - A modern, simple, concurrent programming language by Death Legion Team"
-readme = "README.md"
-license = {text = "MIT"}
-requires-python = ">=3.8"
+version = "0.2.0"
 authors = [
     {name = "Death Legion Team"},
 ]
+description = "Urmom Lang - A standalone programming language with first-class concurrency, pattern matching, and a comprehensive standard library"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+keywords = ["programming-language", "language", "compiler", "interpreter", "concurrency", "urmom"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -31,10 +33,8 @@ urm = "src.cli:main"
 urm-pkg = "src.tools.pkg_manager:main"
 urm-test = "src.tools.test_runner:main"
 
-[project.urls]
-Homepage = "https://github.com/death-legion/urmom-lang"
-Repository = "https://github.com/death-legion/urmom-lang"
-Documentation = "https://urmom-lang.dev/docs"
+[project.optional-dependencies]
+dev = ["pytest", "pyinstaller"]
 
 [tool.setuptools.packages.find]
 where = ["."]

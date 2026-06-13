@@ -1,86 +1,47 @@
 // Concurrency in Urmom Lang
-// spawn, channels, async operations
+// Spawn tasks, communicate via channels, synchronize with futures
 
-fn main() {
-    println("=== Urmom Lang Concurrency ===")
-    println("Making parallel tasks simple!\n")
+// Spawn a concurrent task
+let task = spawn fn() {
+    42
+}
+println("Task spawned! Waiting for result...")
+let result = task.get_value()
+println("Task result: " + str(result))
 
-    // Spawn a concurrent task
-    println("--- Spawn Tasks ---")
+// Create a channel
+let ch = chan(10)
 
-    let task1 = spawn fn() {
-        let mut sum = 0
-        for i in range(1, 1001) {
-            sum += i
-        }
-        sum
+// Spawn producer
+spawn fn() {
+    for i in range(5) {
+        ch.send(i)
+        println("Sent: " + str(i))
     }
-
-    let task2 = spawn fn() {
-        let mut product = 1
-        for i in range(1, 11) {
-            product *= i
-        }
-        product
-    }
-
-    // Await results
-    let sum_result = task1.get_value()
-    let product_result = task2.get_value()
-    println("Sum of 1-1000: " + to_string(sum_result))
-    println("Product of 1-10: " + to_string(product_result))
-
-    // Channels for communication
-    println("\n--- Channels ---")
-    let ch = chan(5)
-
-    // Producer task
-    let producer = spawn fn() {
-        for i in range(1, 6) {
-            ch.send(i)
-            println("  Sent: " + to_string(i))
-        }
-        ch.send(-1)  // Signal end
-    }
-
-    // Consumer
-    let mut value = ch.receive()
-    let mut received = []
-    while value != -1 {
-        append(received, value)
-        println("  Received: " + to_string(value))
-        value = ch.receive()
-    }
-    println("All received: " + join(", ", received))
-
-    // Parallel data processing
-    println("\n--- Parallel Processing ---")
-
-    // Process multiple chunks in parallel
-    let data = range(1, 21)
-    let chunk1 = data[0:5]
-    let chunk2 = data[5:10]
-    let chunk3 = data[10:15]
-    let chunk4 = data[15:20]
-
-    let process = fn(chunk) {
-        let mut sum = 0
-        for n in chunk {
-            sum += n * n
-        }
-        sum
-    }
-
-    let r1 = spawn fn() => process(chunk1)
-    let r2 = spawn fn() => process(chunk2)
-    let r3 = spawn fn() => process(chunk3)
-    let r4 = spawn fn() => process(chunk4)
-
-    let total_sum = r1.get_value() + r2.get_value() + r3.get_value() + r4.get_value()
-    println("Sum of squares (1-20) computed in parallel: " + to_string(total_sum))
-
-    println("\n✓ Concurrency demo complete!")
-    println("The Friendly Gopher handles tasks with ease! 🐿️")
+    ch.close()
 }
 
-main()
+// Collect from channel
+sleep(0.5)
+let mut received = []
+for i in range(5) {
+    let val = ch.receive()
+    push(received, val)
+}
+println("Received: " + str(received))
+
+// Parallel processing with closures
+let mut futures = []
+for n in [1, 2, 3, 4, 5] {
+    let num = n
+    let f = spawn fn() {
+        num * num
+    }
+    push(futures, f)
+}
+
+let mut results = []
+for f in futures {
+    push(results, f.get_value())
+}
+println("Parallel squares: " + str(results))

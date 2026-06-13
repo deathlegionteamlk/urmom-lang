@@ -1,101 +1,38 @@
 // Error Handling in Urmom Lang
-// try/catch/finally, throw, defensive programming
 
-fn main() {
-    println("=== Error Handling in Urmom Lang ===\n")
-
-    // Basic try-catch
-    println("--- Basic Try-Catch ---")
-    try {
-        let result = divide(10, 0)
-        println("Result: " + to_string(result))
-    } catch e {
-        println("Caught error: " + to_string(e))
-    }
-
-    // Try-catch with finally
-    println("\n--- Try-Catch-Finally ---")
-    try {
-        let result = safe_divide(10, 2)
-        println("Result: " + to_string(result))
-    } catch e {
-        println("Error: " + to_string(e))
-    } finally {
-        println("Cleanup: Division operation complete")
-    }
-
-    // Multiple error scenarios
-    println("\n--- Multiple Error Scenarios ---")
-    let values = [10, 0, -5, 3]
-
-    for val in values {
-        try {
-            let result = safe_divide(100, val)
-            println("  100 / " + to_string(val) + " = " + to_string(result))
-        } catch e {
-            println("  100 / " + to_string(val) + " -> Error: " + to_string(e))
-        }
-    }
-
-    // Assertions
-    println("\n--- Assertions ---")
-    try {
-        assert(2 + 2 == 4, "Math should work")
-        println("✓ Basic math assertion passed")
-    } catch e {
-        println("Assertion failed: " + to_string(e))
-    }
-
-    try {
-        assert_eq("hello", "hello")
-        println("✓ String equality assertion passed")
-    } catch e {
-        println("Assertion failed: " + to_string(e))
-    }
-
-    // Custom error types with throw
-    println("\n--- Custom Errors ---")
-    try {
-        validate_age(-5)
-    } catch e {
-        println("Validation error: " + to_string(e))
-    }
-
-    try {
-        validate_age(25)
-        println("✓ Age 25 is valid")
-    } catch e {
-        println("Unexpected error: " + to_string(e))
-    }
-
-    println("\n✓ Error handling demo complete!")
+// Try/catch
+try {
+    let result = 10 / 0
+    println("This won't print")
+} catch {
+    println("Caught division error!")
 }
 
-fn divide(a, b) {
-    if b == 0 {
-        throw "Division by zero!"
+// Throwing errors
+fn risky(x) {
+    if x < 0 {
+        throw error("NegativeValue", "x must be non-negative")
     }
-    a / b
+    return x * 2
 }
 
-fn safe_divide(a, b) {
-    if b == 0 {
-        throw "Cannot divide by zero"
-    }
-    if a < 0 || b < 0 {
-        throw "Both values must be positive"
-    }
-    a / b
+try {
+    let val = risky(-5)
+} catch as err {
+    println("Error: " + str(err))
 }
 
-fn validate_age(age) {
-    if age < 0 {
-        throw "Age cannot be negative"
-    }
-    if age > 150 {
-        throw "Age seems unrealistic"
-    }
-    assert(age >= 0 && age <= 150, "Invalid age")
+// Assertions
+assert 1 + 1 == 2, "Math works"
+assert true, "Truth is truth"
+
+// Finally block
+try {
+    println("Trying something...")
+} catch {
+    println("Error occurred")
+} finally {
+    println("Cleanup done")
 }
 
-main()
+println("All error handling passed!")

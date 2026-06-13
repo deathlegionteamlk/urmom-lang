@@ -1,0 +1,65 @@
+// Structs, Enums, and Traits in Urmom Lang
+
+// Define a struct
+struct Point {
+    x: int
+    y: int
+    
+    fn magnitude(self) {
+        sqrt(self.x * self.x + self.y * self.y)
+    }
+    
+    fn distance_to(self, other) {
+        let dx = self.x - other.x
+        let dy = self.y - other.y
+        sqrt(dx * dx + dy * dy)
+    }
+}
+
+let p1 = Point(3, 4)
+let p2 = Point(6, 8)
+println("Point 1: " + str(p1))
+println("Magnitude: " + str(p1.magnitude()))
+println("Distance: " + str(p1.distance_to(p2)))
+
+// Define an enum
+enum Color {
+    Red
+    Green
+    Blue
+}
+
+let red = Color::Red
+let green = Color::Green
+println("Color: " + str(red))
+println("Green: " + str(green))
+
+// Match on enum
+match red {
+    Color::Red => println("It's red!")
+    Color::Green => println("It's green!")
+    _ => println("Some other color")
+}
+
+// Struct with methods
+struct Counter {
+    count: int
+    
+    fn create() {
+        Counter(0)
+    }
+    
+    fn increment(self) {
+        self.count = self.count + 1
+    }
+    
+    fn value(self) {
+        self.count
+    }
+}
+
+let c = Counter(0)
+c.increment()
+c.increment()
+c.increment()
+println("Counter: " + str(c.value()))

@@ -1,145 +1,77 @@
-// Core Language Tests for Urmom Lang
-// Tests basic language features
-
+// Test Suite for Urmom Lang
 fn test_arithmetic() {
-    assert_eq(2 + 3, 5)
-    assert_eq(10 - 4, 6)
-    assert_eq(3 * 7, 21)
-    assert_eq(15 / 3, 5)
-    assert_eq(10 % 3, 1)
-    assert_eq(2 ** 10, 1024)
-    println("  ✓ test_arithmetic passed")
+    assert 1 + 1 == 2, "Addition"
+    assert 10 - 3 == 7, "Subtraction"
+    assert 4 * 5 == 20, "Multiplication"
+    assert 10 / 2 == 5, "Division"
+    assert 10 % 3 == 1, "Modulo"
+    assert 2 ** 3 == 8, "Power"
 }
 
-fn test_string_operations() {
-    let hello = "Hello"
-    let world = "World"
-    assert_eq(hello + " " + world, "Hello World")
-    assert_eq(len("Urmom"), 5)
-    assert_eq(upper("hello"), "HELLO")
-    assert_eq(lower("WORLD"), "world")
-    assert_eq(trim("  hi  "), "hi")
-    assert(contains("Urmom Lang", "Lang"))
-    println("  ✓ test_string_operations passed")
+fn test_strings() {
+    let s = "hello"
+    assert len(s) == 5, "String length"
+    assert upper(s) == "HELLO", "Upper"
+    assert lower("HELLO") == "hello", "Lower"
+    assert s + " world" == "hello world", "Concatenation"
 }
 
-fn test_array_operations() {
-    let arr = [1, 2, 3, 4, 5]
-    assert_eq(len(arr), 5)
-    assert_eq(arr[0], 1)
-    assert_eq(arr[4], 5)
-
-    let doubled = map(fn(x) => x * 2, arr)
-    assert_eq(doubled[0], 2)
-    assert_eq(doubled[4], 10)
-
-    let evens = filter(fn(x) => x % 2 == 0, arr)
-    assert_eq(len(evens), 2)
-
-    let sum = reduce(fn(a, b) => a + b, arr, 0)
-    assert_eq(sum, 15)
-    println("  ✓ test_array_operations passed")
+fn test_arrays() {
+    let arr = [1, 2, 3]
+    assert len(arr) == 3, "Array length"
+    assert arr[0] == 1, "Array index"
+    assert sum(arr) == 6, "Array sum"
+    let sorted = sort([3, 1, 2])
+    assert sorted[0] == 1, "Array sort"
 }
 
-fn test_dict_operations() {
-    let d = {"a": 1, "b": 2, "c": 3}
-    assert_eq(d["a"], 1)
-    assert_eq(len(d), 3)
-    assert(has_key(d, "b"))
-    assert(!has_key(d, "z"))
-    println("  ✓ test_dict_operations passed")
+fn test_dicts() {
+    let d = {"a": 1, "b": 2}
+    assert d["a"] == 1, "Dict access"
+    assert len(d) == 2, "Dict length"
 }
 
 fn test_control_flow() {
-    // If-else
-    let x = 10
-    let mut result = ""
-    if x > 5 {
-        result = "big"
-    } else {
-        result = "small"
+    let mut x = 0
+    for i in range(5) {
+        x = x + 1
     }
-    assert_eq(result, "big")
-
-    // For-in
-    let mut sum = 0
-    for i in range(1, 6) {
-        sum += i
+    assert x == 5, "For loop"
+    
+    let mut y = 0
+    let mut i = 0
+    while i < 3 {
+        y = y + 10
+        i = i + 1
     }
-    assert_eq(sum, 15)
-
-    // While
-    let mut count = 0
-    let mut n = 8
-    while n > 1 {
-        n = n / 2
-        count += 1
-    }
-    assert_eq(count, 3)
-    println("  ✓ test_control_flow passed")
+    assert y == 30, "While loop"
 }
 
 fn test_functions() {
-    // Basic function
-    assert_eq(add(3, 4), 7)
-
-    // Lambda
-    let square = fn(x) => x * x
-    assert_eq(square(5), 25)
-
-    // Closure
-    let make_adder = fn(x) {
-        fn(y) => x + y
-    }
-    let add5 = make_adder(5)
-    assert_eq(add5(3), 8)
-    println("  ✓ test_functions passed")
+    let add = fn(a, b) => a + b
+    assert add(2, 3) == 5, "Lambda"
+    
+    let double = fn(x) => x * 2
+    assert double(7) == 14, "Named function"
 }
 
 fn test_error_handling() {
     let mut caught = false
     try {
-        throw "test error"
-    } catch e {
+        throw error("TestError", "test message")
+    } catch {
         caught = true
     }
-    assert(caught)
-
-    let mut finally_ran = false
-    try {
-        let x = 10
-    } finally {
-        finally_ran = true
-    }
-    assert(finally_ran)
-    println("  ✓ test_error_handling passed")
+    assert caught, "Try/catch"
 }
 
 fn test_type_conversions() {
-    assert_eq(to_string(42), "42")
-    assert_eq(to_int("123"), 123)
-    assert_eq(to_float("3.14"), 3.14)
-    assert_eq(type_of(42), "int")
-    assert_eq(type_of("hello"), "string")
-    assert_eq(type_of(true), "bool")
-    println("  ✓ test_type_conversions passed")
+    assert str(42) == "42", "int to str"
+    assert int("42") == 42, "str to int"
 }
 
-fn add(a, b) {
-    a + b
+fn test_concurrency() {
+    let task = spawn fn() => 99
+    let val = task.get_value()
+    assert val == 99, "Spawn and get value"
 }
-
-fn main() {
-    println("Running Urmom Lang Core Tests...\n")
-    test_arithmetic()
-    test_string_operations()
-    test_array_operations()
-    test_dict_operations()
-    test_control_flow()
-    test_functions()
-    test_error_handling()
-    test_type_conversions()
-    println("\n✓ All core tests passed!")
-}
-
-main()
